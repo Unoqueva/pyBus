@@ -36,7 +36,7 @@ def init():
   CLIENT = MPDClient()
   if mpdConnect(CLIENT, CON_ID):
     logging.info('Connected to MPD server')
-    CLIENT.setvol(100)
+    CLIENT.setvol(95)
     PLAYLIST = CLIENT.playlistinfo()
     LIBRARY  = CLIENT.listallinfo()
     
@@ -155,7 +155,25 @@ def getPlaylist():
 
 def getLibrary():
   return LIBRARY
-
+  
+def getNextAlbum(albumActual):
+    sw = 0
+    for song in PLAYLIST:
+        if ("album" in song):
+           album = song['album']
+        else:
+           album = 'Sin Titulo'
+        if ("file" in song):
+           filepath = song['file']
+        if album == albumActual:
+           filepath = PLAYLIST[0]['file']
+           sw = 1
+        elif album != albumActual and sw == 1:
+           return filepath
+           break
+ 
+    return filepath
+    
 def  getTrackID():
   if ("songid" not in CLIENT.status()):
     logging.warning("MPD status does not contain songID. Please investigate following status:")
