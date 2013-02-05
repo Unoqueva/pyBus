@@ -173,6 +173,21 @@ def d_cdChange3(packet):
   
 def d_cdChange4(packet):
   logging.info("Running Custom 4")
+  status = pB_audio.getInfo()
+  if ('track' in status):
+    trackStatus = status['track']
+    if trackStatus:
+      if ('album' in trackStatus):
+          pB_audio.playSong(pB_audio.getNextAlbum(status['track']['album']))
+          writeCurrentTrack()
+          _displayTrackInfo()
+      else:
+           pB_audio.next()
+           writeCurrentTrack()
+           _displayTrackInfo()
+      
+
+  
   
 def d_update(packet):
   logging.info("UPDATE")
@@ -232,7 +247,7 @@ def d_cdStartPlaying(packet):
 # Unsure..  
 def d_cdSendStatus(packet):
   writeCurrentTrack()
-  _displayTrackInfo
+  _displayTrackInfo()
 
 # Respond to the Poll for changer alive
 def d_cdPollResponse(packet):
@@ -314,6 +329,9 @@ def _getTrackTextQue():
         displayQue.append(status['track']['artist'])
       if ('title' in trackStatus):
         displayQue.append(status['track']['title'])
+      if not('artist' in trackStatus and 'title' in trackStatus):
+         if ('file' in trackStatus):
+            displayQue.append(status['track']['file'])
     else:
       displayQue.append("Paused")
   return displayQue
